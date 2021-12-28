@@ -1,0 +1,6 @@
+Dockerfile
+.dockerignore
+node_modules
+public
+client/build
+client/node_modules
