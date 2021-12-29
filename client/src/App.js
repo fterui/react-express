@@ -3,18 +3,24 @@ import './App.css';
 import {useState, useEffect} from 'react';
 
 function App() {
-  const [users, setUsers] = useState('');
+  const [user, setUser] = useState('');
   useEffect(() => {
-    fetch('/users/')
-      .then((res) => res.text())
-      .then((text) => setUsers(text));
+    fetch('/api/user')
+      .then((res) => res.json())
+      .then((json) => setUser(json));
   }, []);
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Hello {users}!
+          Hello {user.given_name || "Unknown User"}!
+        </p>
+        <p>
+          {user.login &&
+            <a className="App-link" href="/auth/logout">Logout</a> ||
+            <a className="App-link" href="/auth/login">Login</a>
+          }
         </p>
         <a
           className="App-link"

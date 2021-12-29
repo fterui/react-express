@@ -3,8 +3,12 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const session = require('express-session');							// https://www.npmjs.com/package/express-session
+const passport = require('passport');								// https://www.npmjs.com/package/passport
+const WebAppStrategy = require('ibmcloud-appid').WebAppStrategy;	// https://www.npmjs.com/package/ibmcloud-appid
+const config = require('config');
 
-var usersRouter = require('./routes/users');
+var apiRouter = require('./routes/users');
 
 var app = express();
 
@@ -14,7 +18,33 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/users', usersRouter);
+app.use(session({
+  secret: '123456',
+  resave: true,
+  saveUninitialized: true
+}))
+app.use(passport.initialize());
+app.use(passport.session());
+passport.serializeUser((user, cb) => cb(null, user));
+passport.deserializeUser((user, cb) => cb(null, user));
+passport.use(new WebAppStrategy({
+  tenantId: config.get('appid.tenantId'),
+  clientId: config.get('appid.clientId'),
+  secret: config.get('appid.secret'),
+  oauthServerUrl: config.get('appid.oAuthServerUrl'),
+  redirectUri: `${config.get('url')}/auth/authenticate`
+}));
+app.get('/auth/login', passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+  successRedirect: '/',
+  forceLogin: true
+}));
+app.get('/auth/authenticate', passport.authenticate(WebAppStrategy.STRATEGY_NAME));
+app.get('/auth/logout', (req, res) =>{
+  WebAppStrategy.logout(req);
+  res.redirect('/');
+});
+
+app.use('/api/', apiRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

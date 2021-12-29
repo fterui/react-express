@@ -10,6 +10,8 @@ RUN npm run build
 RUN rm -rf client
 
 FROM node:16
+ENV NODE_ENV=production
+
 COPY --from=builder /home/node/app /home/node/app
 RUN chown -R node:node /home/node/app
 

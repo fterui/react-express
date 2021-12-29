@@ -1,0 +1,7 @@
+{
+    "appid": {
+        "__name": "APPID_CREDENTIALS",
+        "__format": "json"
+    },
+    "url": "APPLICATION_URL"
+}
