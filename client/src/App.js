@@ -15,6 +15,7 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Hello {user.given_name || "Unknown User"}!
+          Count: {user.count}
         </p>
         <p>
           {user.login &&

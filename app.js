@@ -18,11 +18,26 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const CloudantStore = require('connect-cloudant-store')(session);
+const Cloudant = require('@cloudant/cloudant');
+const cloudant = Cloudant({
+  url: config.get('cloudant.url'),
+  plugins: {
+    iamauth: {
+      iamApiKey: config.get('cloudant.apikey')
+    }
+  }
+});
+const store = new CloudantStore({
+  client: cloudant,
+  ttl: 3600
+});
 app.use(session({
   secret: '123456',
   resave: true,
-  saveUninitialized: true
-}))
+  saveUninitialized: true,
+  store
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 passport.serializeUser((user, cb) => cb(null, user));

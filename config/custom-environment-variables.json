@@ -3,5 +3,9 @@
         "__name": "APPID_CREDENTIALS",
         "__format": "json"
     },
+    "cloudant": {
+        "__name": "CLOUDANT_CREDENTIALS",
+        "__format": "json"
+    },
     "url": "APPLICATION_URL"
 }
